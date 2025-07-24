@@ -1,0 +1,482 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>😂 Ultimate Joke Maker</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            padding: 40px;
+            max-width: 600px;
+            width: 100%;
+            text-align: center;
+            animation: slideIn 0.5s ease-out;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        h1 {
+            color: #333;
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .subtitle {
+            color: #666;
+            font-size: 1.1rem;
+            margin-bottom: 30px;
+        }
+
+        .category-buttons {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 30px;
+            justify-content: center;
+        }
+
+        .category-btn {
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .category-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+        }
+
+        .category-btn.active {
+            background: linear-gradient(45deg, #f093fb, #f5576c);
+        }
+
+        .joke-display {
+            background: #f8f9fa;
+            border-radius: 15px;
+            padding: 30px;
+            margin: 30px 0;
+            min-height: 150px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-left: 5px solid #667eea;
+            position: relative;
+        }
+
+        .joke-text {
+            font-size: 1.3rem;
+            line-height: 1.6;
+            color: #333;
+            font-style: italic;
+        }
+
+        .generate-btn {
+            background: linear-gradient(45deg, #f093fb, #f5576c);
+            color: white;
+            border: none;
+            padding: 15px 40px;
+            border-radius: 50px;
+            font-size: 1.2rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin: 10px;
+        }
+
+        .generate-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 15px 30px rgba(245, 87, 108, 0.3);
+        }
+
+        .generate-btn:active {
+            transform: scale(0.98);
+        }
+
+        .stats {
+            display: flex;
+            justify-content: space-around;
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 1px solid #eee;
+        }
+
+        .stat-item {
+            text-align: center;
+        }
+
+        .stat-number {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #667eea;
+        }
+
+        .stat-label {
+            color: #666;
+            font-size: 0.9rem;
+        }
+
+        .loading {
+            animation: pulse 1.5s infinite;
+        }
+
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.5; }
+            100% { opacity: 1; }
+        }
+
+        .favorite-btn {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            margin-left: 10px;
+            transition: transform 0.2s ease;
+        }
+
+        .favorite-btn:hover {
+            transform: scale(1.2);
+        }
+
+        .favorite-btn.favorited {
+            color: #ff6b6b;
+        }
+
+        @media (max-width: 600px) {
+            .container {
+                padding: 20px;
+            }
+            
+            h1 {
+                font-size: 2rem;
+            }
+            
+            .category-buttons {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .category-btn {
+                width: 100%;
+                max-width: 200px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>😂 Ultimate Joke Maker</h1>
+        <p class="subtitle">Get ready to laugh with our collection of hilarious jokes!</p>
+        
+        <div class="category-buttons">
+            <button class="category-btn active" data-category="all">🎭 All Jokes</button>
+            <button class="category-btn" data-category="dad">👨 Dad Jokes</button>
+            <button class="category-btn" data-category="programming">💻 Programming</button>
+            <button class="category-btn" data-category="animal">🐶 Animals</button>
+            <button class="category-btn" data-category="food">🍕 Food</button>
+            <button class="category-btn" data-category="science">🔬 Science</button>
+        </div>
+
+        <div class="joke-display">
+            <div class="joke-text" id="jokeText">
+                Click "Get New Joke" to start laughing! 😄
+            </div>
+            <button class="favorite-btn" id="favoriteBtn" title="Add to favorites">🤍</button>
+        </div>
+
+        <button class="generate-btn" onclick="generateJoke()">🎲 Get New Joke</button>
+        <button class="generate-btn" onclick="shareJoke()" style="background: linear-gradient(45deg, #667eea, #764ba2);">📤 Share Joke</button>
+
+        <div class="stats">
+            <div class="stat-item">
+                <div class="stat-number" id="jokesGenerated">0</div>
+                <div class="stat-label">Jokes Generated</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-number" id="favoritesCount">0</div>
+                <div class="stat-label">Favorites</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-number" id="laughsCount">0</div>
+                <div class="stat-label">Laughs</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Joke database organized by categories
+        const jokes = {
+            dad: [
+                "Why don't scientists trust atoms? Because they make up everything!",
+                "I'm reading a book about anti-gravity. It's impossible to put down!",
+                "Why don't eggs tell jokes? They'd crack each other up!",
+                "I used to hate facial hair, but then it grew on me.",
+                "What do you call a fake noodle? An impasta!",
+                "Why did the scarecrow win an award? He was outstanding in his field!",
+                "I told my wife she was drawing her eyebrows too high. She looked surprised.",
+                "What's the best thing about Switzerland? I don't know, but the flag is a big plus.",
+                "Why don't skeletons fight each other? They don't have the guts!",
+                "I'm terrified of elevators, so I take steps to avoid them."
+            ],
+            programming: [
+                "Why do programmers prefer dark mode? Because light attracts bugs!",
+                "How many programmers does it take to change a light bulb? None, that's a hardware problem!",
+                "Why do Java developers wear glasses? Because they can't C#!",
+                "A SQL query goes into a bar, walks up to two tables and asks, 'Can I join you?'",
+                "Why did the programmer quit his job? He didn't get arrays!",
+                "What's the object-oriented way to become wealthy? Inheritance!",
+                "Why do programmers hate nature? It has too many bugs!",
+                "How do you comfort a JavaScript bug? You console it!",
+                "Why did the developer go broke? Because he used up all his cache!",
+                "What do you call a programmer from Finland? Nerdic!"
+            ],
+            animal: [
+                "What do you call a sleeping bull? A bulldozer!",
+                "Why don't elephants use computers? They're afraid of the mouse!",
+                "What do you call a fish wearing a crown? A king fish!",
+                "Why don't cats play poker in the jungle? Too many cheetahs!",
+                "What do you call a bear with no teeth? A gummy bear!",
+                "Why don't ants get sick? Because they have little anty-bodies!",
+                "What do you call a cow with no legs? Ground beef!",
+                "Why do fish live in saltwater? Because pepper makes them sneeze!",
+                "What do you call a pig that does karate? A pork chop!",
+                "Why don't lobsters share? Because they're shellfish!"
+            ],
+            food: [
+                "Why did the tomato turn red? Because it saw the salad dressing!",
+                "What do you call cheese that isn't yours? Nacho cheese!",
+                "Why did the coffee file a police report? It got mugged!",
+                "What do you call a sad strawberry? A blueberry!",
+                "Why don't bananas ever feel lonely? They hang around in bunches!",
+                "What's a potato's favorite form of transportation? The gravy train!",
+                "Why did the cookie go to the doctor? Because it felt crumbly!",
+                "What do you call a nosy pepper? Jalapeño business!",
+                "Why don't eggs tell jokes? They'd crack each other up!",
+                "What do you call a fake noodle? An impasta!"
+            ],
+            science: [
+                "Why can't you trust atoms? They make up everything!",
+                "What did the scientist say when he found 2 isotopes of helium? HeHe!",
+                "Why did the physics teacher break up with the biology teacher? There was no chemistry!",
+                "What do you call an educated tube? A graduated cylinder!",
+                "Why are chemists excellent for solving problems? They have all the solutions!",
+                "What did one ion say to the other? I've got my ion you!",
+                "Why did the bacteria cross the microscope? To get to the other slide!",
+                "What's a physicist's favorite food? Fission chips!",
+                "Why don't aliens ever land at airports? Because they're looking for space!",
+                "What do you call a tooth in a glass of water? A one molar solution!"
+            ]
+        };
+
+        // Application state
+        let currentCategory = 'all';
+        let currentJoke = '';
+        let stats = {
+            jokesGenerated: 0,
+            favoritesCount: 0,
+            laughsCount: 0
+        };
+        let favorites = JSON.parse(localStorage.getItem('jokemaker-favorites') || '[]');
+
+        // Initialize the app
+        document.addEventListener('DOMContentLoaded', function() {
+            loadStats();
+            updateStatsDisplay();
+            
+            // Add category button event listeners
+            document.querySelectorAll('.category-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    // Remove active class from all buttons
+                    document.querySelectorAll('.category-btn').forEach(b => b.classList.remove('active'));
+                    // Add active class to clicked button
+                    this.classList.add('active');
+                    // Update current category
+                    currentCategory = this.dataset.category;
+                });
+            });
+
+            // Add favorite button event listener
+            document.getElementById('favoriteBtn').addEventListener('click', toggleFavorite);
+        });
+
+        // Generate a random joke
+        function generateJoke() {
+            const jokeText = document.getElementById('jokeText');
+            const favoriteBtn = document.getElementById('favoriteBtn');
+            
+            // Show loading state
+            jokeText.classList.add('loading');
+            jokeText.textContent = 'Generating a hilarious joke...';
+            
+            setTimeout(() => {
+                let jokePool = [];
+                
+                if (currentCategory === 'all') {
+                    // Combine all jokes from all categories
+                    Object.values(jokes).forEach(categoryJokes => {
+                        jokePool = jokePool.concat(categoryJokes);
+                    });
+                } else {
+                    jokePool = jokes[currentCategory] || [];
+                }
+                
+                if (jokePool.length > 0) {
+                    const randomIndex = Math.floor(Math.random() * jokePool.length);
+                    currentJoke = jokePool[randomIndex];
+                    jokeText.textContent = currentJoke;
+                    
+                    // Update favorite button state
+                    updateFavoriteButton();
+                    
+                    // Update stats
+                    stats.jokesGenerated++;
+                    updateStatsDisplay();
+                    saveStats();
+                } else {
+                    jokeText.textContent = "Oops! No jokes found for this category. Try another one!";
+                }
+                
+                jokeText.classList.remove('loading');
+            }, 500);
+        }
+
+        // Toggle favorite status of current joke
+        function toggleFavorite() {
+            if (!currentJoke) return;
+            
+            const favoriteBtn = document.getElementById('favoriteBtn');
+            const jokeIndex = favorites.indexOf(currentJoke);
+            
+            if (jokeIndex === -1) {
+                // Add to favorites
+                favorites.push(currentJoke);
+                favoriteBtn.textContent = '❤️';
+                favoriteBtn.classList.add('favorited');
+                stats.favoritesCount++;
+            } else {
+                // Remove from favorites
+                favorites.splice(jokeIndex, 1);
+                favoriteBtn.textContent = '🤍';
+                favoriteBtn.classList.remove('favorited');
+                stats.favoritesCount--;
+            }
+            
+            // Save to localStorage
+            localStorage.setItem('jokemaker-favorites', JSON.stringify(favorites));
+            updateStatsDisplay();
+            saveStats();
+        }
+
+        // Update favorite button appearance
+        function updateFavoriteButton() {
+            const favoriteBtn = document.getElementById('favoriteBtn');
+            if (favorites.includes(currentJoke)) {
+                favoriteBtn.textContent = '❤️';
+                favoriteBtn.classList.add('favorited');
+            } else {
+                favoriteBtn.textContent = '🤍';
+                favoriteBtn.classList.remove('favorited');
+            }
+        }
+
+        // Share the current joke
+        function shareJoke() {
+            if (!currentJoke) {
+                alert('Generate a joke first to share it!');
+                return;
+            }
+            
+            if (navigator.share) {
+                navigator.share({
+                    title: 'Check out this joke!',
+                    text: currentJoke,
+                    url: window.location.href
+                });
+            } else {
+                // Fallback: copy to clipboard
+                navigator.clipboard.writeText(currentJoke).then(() => {
+                    alert('Joke copied to clipboard! Share it with your friends!');
+                    stats.laughsCount++;
+                    updateStatsDisplay();
+                    saveStats();
+                });
+            }
+        }
+
+        // Update statistics display
+        function updateStatsDisplay() {
+            document.getElementById('jokesGenerated').textContent = stats.jokesGenerated;
+            document.getElementById('favoritesCount').textContent = favorites.length;
+            document.getElementById('laughsCount').textContent = stats.laughsCount;
+        }
+
+        // Save stats to localStorage
+        function saveStats() {
+            localStorage.setItem('jokemaker-stats', JSON.stringify(stats));
+        }
+
+        // Load stats from localStorage
+        function loadStats() {
+            const savedStats = localStorage.getItem('jokemaker-stats');
+            if (savedStats) {
+                stats = JSON.parse(savedStats);
+            }
+            stats.favoritesCount = favorites.length; // Sync with actual favorites count
+        }
+
+        // Keyboard shortcuts
+        document.addEventListener('keydown', function(e) {
+            if (e.code === 'Space') {
+                e.preventDefault();
+                generateJoke();
+            } else if (e.code === 'KeyF') {
+                e.preventDefault();
+                toggleFavorite();
+            }
+        });
+
+        // Generate initial joke
+        setTimeout(() => {
+            generateJoke();
+        }, 1000);
+    </script>
+</body>
+</html>
